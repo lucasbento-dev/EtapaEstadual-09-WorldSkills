@@ -17,49 +17,34 @@ namespace Modulo2
 
         private void btnEntrar_Click(object sender, EventArgs e)
         {
-            SqlConnection conn = new SqlConnection("Data Source=localhost\\SQLEXPRESS;Initial Catalog=Hospital;Integrated Security=True;TrustServerCertificate=True;");
+            SqlConnection conn = new SqlConnection("Data Source=SEN577809\\SQLEXPRESS;Initial Catalog=Hospital;Integrated Security=True;TrustServerCertificate=True;");
 
             conn.Open();
 
             if (string.IsNullOrEmpty(txtEmail.Text) || string.IsNullOrEmpty(txtSenha.Text))
             {
-                MessageBox.Show("Todos os campos devem ser preenchidos", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("Todos os campos devem ser preenchidos.");
             }
             else
             {
-                string sql = @"SELECT * FROM Funcionarios f WHERE f.Email = @Email;";
+                string sql = @"SELECT Id_funcionario FROM Funcionarios WHERE Email = @Email AND Senha = @Senha";
 
                 SqlCommand cmd = new SqlCommand(sql, conn);
 
                 cmd.Parameters.AddWithValue("@Email", txtEmail.Text);
+                cmd.Parameters.AddWithValue("@Senha", txtSenha.Text);
 
-                if (cmd.ExecuteScalar() != DBNull.Value)
+                if (string.IsNullOrEmpty(Convert.ToString(cmd.ExecuteScalar())))
                 {
-                    string sqlSenha = @"SELECT * FROM Funcionarios f WHERE f.Email = @Email AND f.Senha = @Senha;";
-
-                    SqlCommand cmdSenha = new SqlCommand(sqlSenha, conn);
-
-                    cmdSenha.Parameters.AddWithValue("@Email", txtEmail.Text);
-                    cmdSenha.Parameters.AddWithValue("@Senha", txtSenha.Text);
-
-                    if (cmdSenha.ExecuteScalar() != DBNull.Value)
-                    {
-                        MessageBox.Show("Boas vindas", "Informação", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        CadastroPaciente paciente = new CadastroPaciente();
-
-                        paciente.Show();
-
-                        this.Hide();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Senha inválida", "Alerta", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
+                    MessageBox.Show("Senha inválida.");
                 }
                 else
                 {
-                    MessageBox.Show("Email não cadastrado", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    CadastroMedico medico = new CadastroMedico();
+
+                    medico.Show();
+
+                    this.Hide();
                 }
             }
         }
